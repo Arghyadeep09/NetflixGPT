@@ -1,11 +1,13 @@
-const App=()=>{
+import React from 'react'
+import Body from './Components/Body'
+const App = () => {
 
-  return (
-  <>
-  <div>App Component</div>  
-  </>
   
-)
+  return (
+    <div>
+      <Body/>
+    </div>
+  )
 }
 
-export default App;
+export default App
