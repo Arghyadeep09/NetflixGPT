@@ -2,6 +2,8 @@ import React from 'react'
 import { useState,useRef } from 'react'
 import Header from './Header';
 import { validate } from '../utils/validate';
+import {  createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../utils/firebase';
 
 const Login = () => {
 
@@ -16,10 +18,46 @@ const Login = () => {
 
   const handleLogin=()=>{
     console.log(email.current.value,password.current.value);
-    const message=validate({email:email.current.value,password:password.current.value});
+    const message=validate(email.current.value,password.current.value);
     setErrorMessage(message);
+
+    if(message) return;
+    console.log(email.current.value,password.current.value+"after validation");
+
+    if(isSignInForm){
+      // Sign up Logic Here
+      console.log(email.current.value,password.current.value);
+      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+       .then((userCredential) => {
+  
+       const user = userCredential.user;
+       console.log(user);
     
-  }
+        })
+       .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorMessage(errorCode+"-"+errorMessage);
+    
+         });
+    
+    }
+    else{
+    // Sign In Logic Here
+    signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setErrorMessage(errorCode+"-"+errorMessage);
+  });
+    }
+};
     
   return (
     <div >
@@ -38,7 +76,7 @@ const Login = () => {
         <input type="password" placeholder='password' ref={password}
         className='p-3 my-4 w-full text-[#fef9fd] bg-[#1c1313] rounded-sm'/>
         <p className='text-red-600 text-bold'>{errorMessage}</p>
-        <button className='bg-[#e50914] text-[#fef9fd] p-3  my-5 w-full rounded-sm'
+        <button className='bg-[#e50914] text-[#fef9fd] p-3  my-5 w-full rounded-sm cursor-pointer hover:bg-red-700'
         onClick={handleLogin}>{isSignInForm ? "Sign Up":"Sign In"}</button>
         <p className='text-white py-4 cursor-pointer' onClick={handleSignInform}>{isSignInForm ? "Already an User ? Sign In here" : "New on Netflix ? Sign Up here"}</p>
       </form>
